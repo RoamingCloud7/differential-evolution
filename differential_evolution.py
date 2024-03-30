@@ -1,11 +1,18 @@
 import time
 import numpy as np
 
-# 创建DE类
+# Create th  Differential Evolution class
 class DifferentialEvolution():
-    # 此函数对类进行初始化
-    # 顺序输入为计算个体适应值的函数（func）、个体的维数（n_dim）、变异缩放因子（F）、种群规模（size_pop）、最大迭代次数（max_iter）、交叉概率因子（prob_mut）、个体各维的下限与上限（lb、ub）
-    def __init__(self, func, n_dim, F=0.5,size_pop=50, max_iter=200, prob_mut=0.5,lb=-1, ub=1):
+    # The initialization function
+    # func: the function to calculate the corresponding value of the individual
+    # n_dim:    the dimension of the individual
+    # F:        Mutation scaling factor
+    # size_pop: the size of the population
+    # max_iter: the maximum number of iterations
+    # prob_mut: the probability of crossover
+    # lb:       lower limits of every dimension of the individual
+    # ub:       upper limits of every dimension of the individual
+    def __init__(self, func, n_dim, F=0.5, size_pop=50, max_iter=200, prob_mut=0.5,lb=-1, ub=1):
         # generation_best_X/Y：历次迭代后种群中适应值最高的个体及其适应值
         self.generation_best_X = [-99]
         self.generation_best_Y = [-99]
