@@ -17,7 +17,7 @@ class DifferentialEvolution():
         self.generation_best_X = [-99]
         self.generation_best_Y = [-99]
         self.all_history_Y=[]
-        # 下列参数与函数输入同义
+
         self.func= self.func_transformer(func)  # 此处对func函数进行变换
         self.F = F
         self.n_dim=n_dim
@@ -25,6 +25,10 @@ class DifferentialEvolution():
         self.max_iter=max_iter
         self.prob_mut=prob_mut
         # X为初始种群，V和U分别为变异和交叉后的种群，Y为所有个体的适应值
+        # X: the initial population
+        # V: the population after mutation
+        # U: the population after crossover
+        # Y: 
         self.X,self.V, self.U= None, None,None
         self.Y=[]
         self.convergeTime=500
