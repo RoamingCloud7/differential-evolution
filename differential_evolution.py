@@ -13,33 +13,31 @@ class DifferentialEvolution():
     # lb:       lower limits of every dimension of the individual
     # ub:       upper limits of every dimension of the individual
     def __init__(self, func, n_dim, F=0.5, size_pop=50, max_iter=200, prob_mut=0.5,lb=-1, ub=1):
-        # generation_best_X/Y：历次迭代后种群中适应值最高的个体及其适应值
+        # generation_best_X/Y：The best individual and its objective value after several iterations
         self.generation_best_X = [-99]
         self.generation_best_Y = [-99]
         self.all_history_Y=[]
 
-        self.func= self.func_transformer(func)  # 此处对func函数进行变换
+        self.func= self.func_transformer(func)  
         self.F = F
         self.n_dim=n_dim
         self.size_pop=size_pop
         self.max_iter=max_iter
         self.prob_mut=prob_mut
-        # X为初始种群，V和U分别为变异和交叉后的种群，Y为所有个体的适应值
         # X: the initial population
         # V: the population after mutation
         # U: the population after crossover
-        # Y: 
+        # Y: the objective scores of every individuals
         self.X,self.V, self.U= None, None,None
         self.Y=[]
         self.convergeTime=500
         self.totalTime=0
-        # 生成初始个体标准类型与取值范围
+        # create the boundary of the population
         self.lb, self.ub = np.array(lb) * np.ones(self.n_dim), np.array(ub) * np.ones(self.n_dim)
 
-    # 此函数用来对函数进行改变
-    # 输入为函数
-    # 输出为改变后的函数
-    # 具体变换为：func函数只能对单组植物参数进行相应的适应值计算，转换后的函数可对多组作物参数进行适应值计算。转换后的函数输入为多组参数组成的列表，输出为对应的适应值组成的列表
+    # Transform the input function
+    # The func function can only calculate the corresponding objective values for a single set of plant parameters
+    # while the converted function can calculate objective values for multiple sets of crop parameters.
     def func_transformer(self,func):
 
         def func_transformed(X):
@@ -47,23 +45,23 @@ class DifferentialEvolution():
 
         return func_transformed
 
-    # 此函数用来对种群进行初始化
+    # initialize the population
     def crtbp(self):
-        # 生成初始种群，X为种群个体的集合
+        # X: the set of population
         self.X = np.random.uniform(low=self.lb, high=self.ub, size=(self.size_pop, self.n_dim))
 
-    # 此函数用来对种群进行变异操作
+    # Mutation process
     def mutation(self):
         X = self.X
-        # 挑选用于变异的个体
+        # select the individuals for mutation
         random_idx = np.random.randint(0, self.size_pop, size=(self.size_pop, 3))
         r1, r2, r3 = random_idx[:, 0], random_idx[:, 1], random_idx[:, 2]
-        # V为变异后的种群
+        # V: the population after mutation
         self.V = X[r1, :] + self.F * (X[r2, :] - X[r3, :])
-        # 此处的操作在相关书籍中未发现描述！！！
-        # 再次生成一个随机初始种群
+        # create a random population for back-up replacement
         mask = np.random.uniform(low=self.lb, high=self.ub, size=(self.size_pop, self.n_dim))
-        # 如果变异后种群中部分个体的部分分量过界，则返回一个新的随机种群内的对应值
+        # If the partial component of some individuals in the population after the mutation is out of bounds
+        # it will be replaced by the corresponding value of back-up randomized population
         self.V = np.where(self.V < self.lb, mask, self.V)
         self.V = np.where(self.V > self.ub, mask, self.V)
 
