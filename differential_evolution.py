@@ -65,7 +65,7 @@ class DifferentialEvolution():
         self.V = np.where(self.V < self.lb, mask, self.V)
         self.V = np.where(self.V > self.ub, mask, self.V)
 
-    # 此函数用来对种群进行交叉操作
+    # Crossover process
     def crossover(self):
         # mask为一个bool型数组，为true的值表示种群个体对应的分量应替换为变异后的值
         mask = np.random.rand(self.size_pop, self.n_dim) < self.prob_mut
@@ -74,7 +74,7 @@ class DifferentialEvolution():
         # 根据mask数组，对种群进行交叉操作，U为交叉后的种群
         self.U = np.where(mask, self.V, self.X)
 
-    # 此函数用来计算种群所有个体的适应值
+    # Calculating the objective values of all individuals
     def x2y(self):
         self.Y = self.func(self.X)
         return self.Y
