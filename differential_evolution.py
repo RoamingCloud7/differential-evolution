@@ -67,11 +67,11 @@ class DifferentialEvolution():
 
     # Crossover process
     def crossover(self):
-        # mask为一个bool型数组，为true的值表示种群个体对应的分量应替换为变异后的值
+        # mask: a bool array，true value indicates that the component of an individual should be replaced with the value after the mutation.
         mask = np.random.rand(self.size_pop, self.n_dim) < self.prob_mut
-         # 保证每个个体都至少有一维分量由变异后的个体贡献
+         # Each individual is guaranteed to have at least one dimensional component contributed by the mutated individual
         mask[np.random.randint(0,7)]=True
-        # 根据mask数组，对种群进行交叉操作，U为交叉后的种群
+        # Crossover based on the mask array
         self.U = np.where(mask, self.V, self.X)
 
     # Calculating the objective values of all individuals
@@ -79,46 +79,39 @@ class DifferentialEvolution():
         self.Y = self.func(self.X)
         return self.Y
 
-    # 此函数用来对种群进行选择操作
+    # Selection process
     def selection(self):
         X = self.X.copy()
-        # 初始种群每个个体对应的适应值
+        # The object values of initial population
         if  len(self.Y)!=0:
             X_Y = self.Y.copy()
         else:
             X_Y = self.x2y().copy()
         self.X = U = self.U
-        # 交叉后种群每个个体对应的适应值
+        # The object values after crossover
         U_Y = self.x2y()
-        # 根据适应值大小进行选择，并将X变为单列
+        # Select individuals based on objective value and make X a single column
         self.X = np.where((X_Y < U_Y).reshape(-1, 1), X, U)
         self.x2y()
-        """ X = self.X.copy()
-        # 初始种群每个个体对应的适应值
-        X_Y = self.x2y().copy()
-        self.X = U = self.U
-        # 交叉后种群每个个体对应的适应值
-        U_Y = self.x2y()
-        # 根据适应值大小进行选择，并将X变为单列
-        self.X = np.where((X_Y < U_Y).reshape(-1, 1), X, U) """
 
-    # 算法模型运行
+
+    # Run the algorithm
     def run(self):
         start = time.perf_counter()
-        # 初始化种群
+        # Initialize
         self.crtbp()
-        # 进行迭代
+        # iteration
         for i in range(self.max_iter):
-            self.mutation()     # 变异
-            self.crossover()    # 交叉
-            self.selection()    # 选择
-            # 记录每次迭代时适应值中最小值的下标
+            self.mutation()
+            self.crossover()   
+            self.selection()    
+            # Store the index of the best objective value after each iteration
             generation_best_index = self.Y.argmin()
-            # 记录适应值最小对应的个体
+            # Store the individual with best objective value
             self.generation_best_X.append(self.X[generation_best_index, :].copy())
-            # 记录最小适应值
+            # Store the best objective value
             self.generation_best_Y.append(self.Y[generation_best_index])
-            #判断是否达到收敛
+            # Determine whether the convergence has been reached
             if(self.convergeTime==500 and i>20):
                 count=0
                 for j in range(i-10,i):
@@ -127,7 +120,7 @@ class DifferentialEvolution():
                 if(count==10):
                     self.convergeTime=i
 
-            # 记录迭代中所有适应值
+            # Store all the objective values
             self.all_history_Y.append(self.Y)
             print(self.Y[generation_best_index])
 
@@ -138,14 +131,14 @@ class DifferentialEvolution():
         self.totalTime=elapsed
         
         print("time cost:", elapsed)
-        # 记录所有迭代中的最大适应值的下标
+        # Store the index of the individual with best objective value of all iterations
         global_best_index = np.array(self.generation_best_Y).argmin()
         print(global_best_index)
-        # 记录最大适应值对应的个体值
+        # Store the individual with best objective value
         global_best_X = self.generation_best_X[global_best_index]
         print(global_best_X)
-        # 记录最大适应值
+        # Store the best objective value
         global_best_Y = self.generation_best_Y[global_best_index]
         print(global_best_Y)
-        # 返回最大适应值个体及其适应值
+        # Return the best individual and its objective value
         return global_best_X, global_best_Y
